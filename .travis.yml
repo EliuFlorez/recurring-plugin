@@ -1,0 +1,9 @@
+language: java
+jdk:
+  - oraclejdk9
+notifications:
+  email:
+    recipients:
+      - eliufz@gmail.com
+    on_success: never # default: change
+    on_failure: always # default: always
