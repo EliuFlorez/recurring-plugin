@@ -1,5 +1,7 @@
 # elastic-recurring-plugin
 
+Version 2.4 [elastic-recurring-plugin](https://github.com/betorcs/elastic-recurring-plugin)
+
 Allow to work in ES with some features of recurrent dates defined in [rfc2445](https://www.ietf.org/rfc/rfc2445.txt). 
 This plugin adds a new type named *recurring* and the native scripts: *nextOccurrence*, *hasOccurrencesAt*, *occurBetween* and *notHasExpired*.
 
