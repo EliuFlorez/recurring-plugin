@@ -8,23 +8,11 @@ setup:
           index.number_of_replicas: 0
         mapping.type1:
           properties:
-            name.type: text
+            name.type: string
             recurrent_date: recurrent
 
-  - do:
-    index: {
-        index: test_index, 
-        type: type1, 
-        id: 1, 
-        body: {
-            name: "event 1", 
-            recurrent_date: {
-                start_date: "2016-01-01", 
-                end_date: "2016-01-01", 
-                rrule: "FREQ:DAILY"
-            }
-        }
-    }
+  -do:
+    index: {index: test_index, type: type1, id: 1, body: {name: "event 1", recurrent_date: {start_date: "2016-01-01", end_date: "2016-01-01", rrule: "FREQ:DAILY"}}}
 
 
 ---

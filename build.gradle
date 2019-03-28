@@ -1,9 +1,11 @@
 buildscript {
 	ext {
-        elasticsearchVersion = "6.6.1"
+        elasticsearchVersion = "6.6.0"
     }
+    
     repositories {
         mavenCentral()
+        mavenLocal()
         jcenter()
     }
 
@@ -16,8 +18,8 @@ group = 'org.devmaster.elasticsearch'
 version = "$elasticsearchVersion-1.0"
 
 apply plugin: 'java'
-apply plugin: 'idea'
 apply plugin: 'elasticsearch.esplugin'
+apply plugin: 'idea'
 
 licenseFile = rootProject.file('LICENSE.txt')
 noticeFile = rootProject.file('NOTICE.txt')
@@ -30,10 +32,18 @@ esplugin {
     noticeFile rootProject.file('NOTICE.txt')
 }
 
-
 dependencies {
-    compile "org.scala-saddle:google-rfc-2445:20110304"
-    compile "com.google.guava:guava:18.0"
+    // https://mvnrepository.com/artifact/org.scala-saddle/google-rfc-2445
+	compile group: 'org.scala-saddle', name: 'google-rfc-2445', version: '20110304'
+
+    // https://mvnrepository.com/artifact/com.google.guava/guava
+	compile group: 'com.google.guava', name: 'guava', version: '23.0'
+	
+	// https://mvnrepository.com/artifact/junit/junit
+	testCompile group: 'junit', name: 'junit', version: '4.12'
+	
+	// https://mvnrepository.com/artifact/org.elasticsearch.test/framework
+	testCompile group: 'org.elasticsearch.test', name: 'framework', version: "$elasticsearchVersion"
 }
 
 dependencyLicenses.enabled = false
