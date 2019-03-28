@@ -11,7 +11,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
+/*
 package org.devmaster.elasticsearch.plugin;
 
 import org.elasticsearch.common.settings.Settings;
@@ -20,8 +20,6 @@ import org.elasticsearch.test.ESIntegTestCase;
 
 import java.util.Collection;
 import java.util.Collections;
-import java.util.ArrayList;
-import java.util.List;
 
 import static org.elasticsearch.cluster.metadata.IndexMetaData.SETTING_NUMBER_OF_REPLICAS;
 import static org.elasticsearch.cluster.metadata.IndexMetaData.SETTING_NUMBER_OF_SHARDS;
@@ -39,13 +37,12 @@ public class AbstractSearchScriptTestCase extends ESIntegTestCase {
     
     @Override
     protected Collection<Class<? extends Plugin>> nodePlugins() {
-        List<Class<? extends Plugin>> list = new ArrayList<Class<? extends Plugin>>();
-        list.add(RecurringPlugin.class);
-        return Collections.unmodifiableCollection(list);
+        return Collections.singletonList(RecurringPlugin.class);
     }
-
+    
     @Override
     protected Collection<Class<? extends Plugin>> transportClientPlugins() {
         return nodePlugins();
     }
 }
+*/

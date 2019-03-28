@@ -23,10 +23,14 @@ import org.elasticsearch.common.settings.Settings;
 import org.elasticsearch.common.xcontent.XContentBuilder;
 import org.elasticsearch.common.xcontent.XContentParser;
 
-import org.elasticsearch.index.mapper.*;
+import org.elasticsearch.index.mapper.Mapper;
+import org.elasticsearch.index.mapper.MappedFieldType;
+import org.elasticsearch.index.mapper.MapperParsingException;
 import org.elasticsearch.index.mapper.FieldMapper;
+import org.elasticsearch.index.mapper.ParseContext;
 import org.elasticsearch.index.mapper.DateFieldMapper;
 import org.elasticsearch.index.mapper.TextFieldMapper;
+import org.elasticsearch.index.query.QueryShardContext;
 
 import java.io.IOException;
 import java.util.Arrays;
@@ -35,10 +39,8 @@ import java.util.List;
 import java.util.Map;
 
 import static org.apache.lucene.index.IndexOptions.DOCS;
-import static org.elasticsearch.index.mapper.Mapper.BuilderContext;
 import static org.elasticsearch.index.mapper.TypeParsers.parseField;
 import static org.elasticsearch.index.mapper.TypeParsers.parseMultiField;
-import org.elasticsearch.index.query.QueryShardContext;
 
 public class RecurringFieldMapper extends FieldMapper {
 
@@ -104,9 +106,9 @@ public class RecurringFieldMapper extends FieldMapper {
     
     public static class Builder extends FieldMapper.Builder<Builder, RecurringFieldMapper> {
 
-        private final Mapper.Builder startDateBuilder = dateField(FieldNames.START_DATE);
-        private final Mapper.Builder endDateBuilder = dateField(FieldNames.END_DATE);
-        private final Mapper.Builder rruleBuilder = textField(FieldNames.RRULE);
+        private final DateFieldMapper.Builder startDateBuilder = dateField(FieldNames.START_DATE);
+        private final DateFieldMapper.Builder endDateBuilder = dateField(FieldNames.END_DATE);
+        private final TextFieldMapper.Builder rruleBuilder = textField(FieldNames.RRULE);
 
         protected Builder(String name) {
             super(name, Defaults.FIELD_TYPE, Defaults.FIELD_TYPE);
@@ -118,9 +120,9 @@ public class RecurringFieldMapper extends FieldMapper {
             
             context.path().add(name);
 
-            DateFieldMapper startDateMapper = (DateFieldMapper) startDateBuilder.build(context);
-            DateFieldMapper endDateMapper = (DateFieldMapper) endDateBuilder.build(context);
-            TextFieldMapper rruleMapper = (TextFieldMapper) rruleBuilder.build(context);
+            DateFieldMapper startDateMapper = startDateBuilder.build(context);
+            DateFieldMapper endDateMapper = endDateBuilder.build(context);
+            TextFieldMapper rruleMapper = rruleBuilder.build(context);
 
             context.path().remove();
 
@@ -160,11 +162,11 @@ public class RecurringFieldMapper extends FieldMapper {
     
     public static class TypeParser implements Mapper.TypeParser {
         @Override
-        public Mapper.Builder<?, ?> parse(String name, Map<String, Object> node, ParserContext parserContext)
-                throws MapperParsingException {
+        public Mapper.Builder<?, ?> parse(String name, Map<String, Object> node, ParserContext parserContext) 
+        		throws MapperParsingException {
             
             Builder builder = new Builder(name);
-            /*
+            
             // tweaking these settings is no longer allowed, the entire purpose of murmur3 fields is to store a hash
             if (node.get("doc_values") != null) {
                 throw new MapperParsingException("Setting [doc_values] cannot be modified for field [" + name + "]");
@@ -181,7 +183,7 @@ public class RecurringFieldMapper extends FieldMapper {
                     iterator.remove();
                 }
             }
-            */
+            
             parseField(builder, name, node, parserContext);
 
             return builder;

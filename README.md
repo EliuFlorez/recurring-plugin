@@ -1,13 +1,11 @@
 # elastic-recurring-plugin
 
-Version 2.4 [elastic-recurring-plugin](https://github.com/betorcs/elastic-recurring-plugin)
-
 Allow to work in ES with some features of recurrent dates defined in [rfc2445](https://www.ietf.org/rfc/rfc2445.txt). 
 This plugin adds a new type named *recurring* and the native scripts: *nextOccurrence*, *hasOccurrencesAt*, *occurBetween* and *notHasExpired*.
 
-It was tested in ES 6.6
+It was tested in ES 6.6.1
 
-[![Build Status](https://travis-ci.org/betorcs/elastic-recurring-plugin.svg?branch=master)](https://travis-ci.org/betorcs/elastic-recurring-plugin)
+[![Build Status](https://travis-ci.org/betorcs/elastic-recurring-plugin.svg?branch=5.0)](https://travis-ci.org/betorcs/elastic-recurring-plugin)
 
 ## Getting start
 
@@ -92,7 +90,7 @@ PUT `sample/event/_mapping`
   "event": {
     "properties": {
       "name": {
-        "type": "text"
+        "type": "string"
       },
       "recurrent_date": {
         "type": "recurring"
@@ -417,4 +415,70 @@ RESPONSE
   }
 }
 
+```
+
+
+Example in ES 5.0.0
+
+PUT /sample
+```json
+{
+	"settings": {
+		"index": {
+			"number_of_shards" : 2,
+            "number_of_replicas" : 0,
+            "analysis": {
+            	"analyzer": {
+            		"myAnalyzer": {
+            			"type": "brazilian"
+            		}
+            	}
+            }
+		}
+	},
+	"mappings": {
+		"type1": {
+			"properties": {
+				"title": {
+					"type": "string",
+					"fields": {
+						"analyzed": { "type": "string", "analyzer": "myAnalyzer"},
+						"raw": { "type": "string", "index": "not_analyzed"}
+					}
+				},
+				"recurrent_date": { "type": "recurring" }
+			}
+		}
+	}
+}
+```
+
+PUT /sample/type1/1
+```json
+{
+	"title": "Dia dos pais",
+	"recurrent_date": {
+		"start_date": "2016-08-14",
+		"rrule": "RRULE:FREQ=YEARLY;BYMONTH=8;BYDAY=2SU;WKST=SU"
+	}
+}
+```
+
+POST /sample/_search
+```json
+{
+	"_source": true,
+	"script_fields": {
+        "nextOccur": {
+            "script": {
+                "inline": "nextOccurrence",
+                "lang": "native",
+                "params": {
+                    "field": "recurrent_date",
+                    "from": "2017-01-01"
+                }
+            }
+        }
+    }
+}
 ```

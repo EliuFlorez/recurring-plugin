@@ -1,9 +1,18 @@
 language: java
+
+sudo: required
+
 jdk:
-  - oraclejdk9
+  - oraclejdk8
 notifications:
   email:
     recipients:
       - eliufz@gmail.com
     on_success: never # default: change
     on_failure: always # default: always
+
+install: true
+
+script:
+  - sudo apt-get update && sudo apt-get install oracle-java8-installer
+  - ./gradlew clean test

@@ -11,19 +11,20 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
+/*
 package org.devmaster.elasticsearch.plugin;
 
 import java.io.IOException;
 import org.elasticsearch.common.SuppressForbidden;
-import org.elasticsearch.cli.Terminal;
-import org.elasticsearch.common.logging.LogConfigurator;
 import org.elasticsearch.common.settings.Settings;
-import org.elasticsearch.env.Environment;
 import org.elasticsearch.node.MockNode;
 import org.elasticsearch.node.Node;
-import org.elasticsearch.node.InternalSettingsPreparer;
 import org.elasticsearch.plugins.Plugin;
+
+import org.elasticsearch.cli.Terminal;
+import org.elasticsearch.common.logging.LogConfigurator;
+import org.elasticsearch.node.InternalSettingsPreparer;
+import org.elasticsearch.env.Environment;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -31,9 +32,6 @@ import java.util.concurrent.CountDownLatch;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-/**
- * Main class to easily run the the plugin from a IDE.
- */
 public class ElasticsearchWithPluginLauncher {
 
     @SuppressForbidden(reason = "not really code or a test")
@@ -44,15 +42,15 @@ public class ElasticsearchWithPluginLauncher {
                 .put("plugins.load_classpath_plugins", "false")
                 .put("path.home", System.getProperty("es.path.home", System.getProperty("user.dir")))
                 .build();
-
+        
         // Setup logging using config/logging.yml
-        //Environment environment = InternalSettingsPreparer.prepareEnvironment(settings, Terminal.DEFAULT);
-        //Class.forName("org.apache.log4j.Logger");
-        //LogConfigurator.configure(environment);
+        Environment environment = InternalSettingsPreparer.prepareEnvironment(settings, Terminal.DEFAULT);
+        Class.forName("org.apache.logger.log4j");
+        LogConfigurator.configure(environment);
 
         final CountDownLatch latch = new CountDownLatch(1);
 
-        Collection<Class<? extends Plugin>> classes = new ArrayList<Class<? extends Plugin>>();
+        Collection<Class<? extends Plugin>> classes = new ArrayList<>();
         classes.add(RecurringPlugin.class);
         final Node node = new MockNode(settings, classes);
         Runtime.getRuntime().addShutdownHook(new Thread() {
@@ -73,3 +71,4 @@ public class ElasticsearchWithPluginLauncher {
         latch.await();
     }
 }
+*/

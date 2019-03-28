@@ -14,7 +14,6 @@
 
 package org.devmaster.elasticsearch.index.mapper;
 
-import org.joda.time.LocalDate;
 import org.junit.Test;
 
 import java.text.ParseException;
@@ -33,12 +32,10 @@ public class RecurringTest {
         assertNotNull(occurrences);
         assertEquals(5, occurrences.size());
 
-        Recurring coogeePro = recurring("2018-02-05", null, "RRULE:FREQ=MONTHLY;BYDAY=2WE;WKST=SU");
-        List<String> ocurrences = coogeePro.occurrencesBetween(new LocalDate(2018, 2, 1), new LocalDate(2018, 4, 1));
-        assertEquals(3, ocurrences.size());
-        assertEquals("2018-02-05", ocurrences.get(0));
-        assertEquals("2018-02-14", ocurrences.get(1));
-        assertEquals("2018-03-14", ocurrences.get(2));
+        Recurring coogeePro = recurring("2018-02-21", null, "RRULE:FREQ=MONTHLY;BYDAY=4WE;WKST=SU");
+        List<String> ocurrences = coogeePro.occurrencesBetween(new LocalDate(2018, 2, 16), new LocalDate(2018, 3, 16));
+        assertEquals(2, ocurrences.size());
+        assertEquals("2018-02-21", ocurrences.get(0));
     }
 
     @Test
@@ -117,6 +114,7 @@ public class RecurringTest {
         assertFalse(recurring.occurBetween("2016-11-13", "2016-11-16"));
     }
 
+
     @Test
     public void test_hasAnyOccurrenceBetween() throws Exception {
         Recurring recurring = new Recurring("2017-06-01", "2017-06-30", null);
@@ -173,13 +171,6 @@ public class RecurringTest {
         assertTrue(recurring.occurBetween("2016-12-05", "2016-12-06"));
         assertFalse(recurring.occurBetween("2016-11-22", "2016-11-23"));
         assertFalse(recurring.occurBetween("2016-11-15", "2016-11-15"));
-    }
-
-    @Test
-    public void test_occurBetween_withEndDateAndStartDateAreTheSame() throws ParseException {
-        Recurring recurring = new Recurring("2018-02-28", null, "RRULE:FREQ=WEEKLY;BYDAY=WE");
-
-        assertTrue(recurring.occurBetween("2018-02-28", "2018-02-28"));
     }
 
     @Test
