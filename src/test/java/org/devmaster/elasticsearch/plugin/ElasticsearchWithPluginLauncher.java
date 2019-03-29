@@ -11,7 +11,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-/*
+
 package org.devmaster.elasticsearch.plugin;
 
 import java.io.IOException;
@@ -71,4 +71,3 @@ public class ElasticsearchWithPluginLauncher {
         latch.await();
     }
 }
-*/

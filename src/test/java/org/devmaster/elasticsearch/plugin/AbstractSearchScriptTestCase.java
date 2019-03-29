@@ -44,4 +44,5 @@ public class AbstractSearchScriptTestCase extends ESIntegTestCase {
     protected Collection<Class<? extends Plugin>> transportClientPlugins() {
         return nodePlugins();
     }
+    
 }

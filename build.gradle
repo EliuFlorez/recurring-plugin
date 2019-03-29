@@ -1,11 +1,11 @@
 buildscript {
 	ext {
-        elasticsearchVersion = "6.6.0"
+        elasticsearchVersion = "6.6.1"
     }
     
     repositories {
-        mavenCentral()
         mavenLocal()
+        mavenCentral()
         jcenter()
     }
 
@@ -15,21 +15,38 @@ buildscript {
 }
 
 group = 'org.devmaster.elasticsearch'
-version = "$elasticsearchVersion-1.0"
+version = "1.0"
 
+apply plugin: 'eclipse'
 apply plugin: 'java'
 apply plugin: 'elasticsearch.esplugin'
 apply plugin: 'idea'
+apply plugin: 'maven'
 
+//ext.projectSubstitutions = [:]
+
+// license of this project
 licenseFile = rootProject.file('LICENSE.txt')
+
+// copyright notices
 noticeFile = rootProject.file('NOTICE.txt')
 
 esplugin {
     name "elastic-recurring-plugin"
     description "Plugin to handle with recurring event using rfc-2445 rules."
     classname "org.devmaster.elasticsearch.plugin.RecurringPlugin"
-	licenseFile rootProject.file('LICENSE.txt')
+	
+	// license of the plugin, may be different than the above license
+    licenseFile rootProject.file('LICENSE.txt')
+    
+    // copyright notices, may be different than the above notice
     noticeFile rootProject.file('NOTICE.txt')
+}
+
+repositories {
+    mavenLocal()
+    mavenCentral()
+    jcenter()
 }
 
 dependencies {
@@ -46,5 +63,27 @@ dependencies {
 	testCompile group: 'org.elasticsearch.test', name: 'framework', version: "$elasticsearchVersion"
 }
 
+integTest.enabled = false
+
+integTestCluster {
+    setting 'clusterName',     'ESTest'
+    setting 'version', "$elasticsearchVersion"
+    setting 'httpPort', '9200'
+}
+
+// check style can be disabled, or you can configure a different checkstyle file
+checkstyleMain.enabled = false
+checkstyleTest.enabled = false
+
+// dependency license check needs can be enabled
 dependencyLicenses.enabled = false
+
+// thirdparty audit needs can be enabled
 thirdPartyAudit.enabled = false
+
+// license header checks can be disabled
+licenseHeaders.enabled = true
+
+//artifacts {
+//    archives javadocJar, sourcesJar
+//}
