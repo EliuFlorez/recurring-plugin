@@ -17,6 +17,8 @@ package org.devmaster.elasticsearch.plugin;
 import org.elasticsearch.common.settings.Settings;
 import org.elasticsearch.plugins.Plugin;
 import org.elasticsearch.test.ESIntegTestCase;
+import org.elasticsearch.test.ESIntegTestCase.ClusterScope;
+import org.elasticsearch.test.ESIntegTestCase.Scope;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -24,25 +26,19 @@ import java.util.Collections;
 import static org.elasticsearch.cluster.metadata.IndexMetaData.SETTING_NUMBER_OF_REPLICAS;
 import static org.elasticsearch.cluster.metadata.IndexMetaData.SETTING_NUMBER_OF_SHARDS;
 
-@ESIntegTestCase.ClusterScope(scope = ESIntegTestCase.Scope.SUITE, numDataNodes = 1)
-public class AbstractSearchScriptTestCase extends ESIntegTestCase {
-    
+@ClusterScope(scope = Scope.SUITE, numDataNodes = 1)
+public abstract class AbstractSearchScriptTestCase extends ESIntegTestCase {
+
     @Override
     public Settings indexSettings() {
         Settings.Builder builder = Settings.builder();
-        builder.put(SETTING_NUMBER_OF_SHARDS, 1);
-        builder.put(SETTING_NUMBER_OF_REPLICAS, 0);
+        builder.put(SETTING_NUMBER_OF_SHARDS, 2);
+        builder.put(SETTING_NUMBER_OF_REPLICAS, 1);
         return builder.build();
     }
-    
+
     @Override
     protected Collection<Class<? extends Plugin>> nodePlugins() {
         return Collections.singletonList(RecurringPlugin.class);
     }
-    
-    @Override
-    protected Collection<Class<? extends Plugin>> transportClientPlugins() {
-        return nodePlugins();
-    }
-    
 }

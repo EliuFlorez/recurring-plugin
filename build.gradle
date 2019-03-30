@@ -63,12 +63,13 @@ dependencies {
 	testCompile group: 'org.elasticsearch.test', name: 'framework', version: "$elasticsearchVersion"
 }
 
-integTest.enabled = false
+integTest.enabled = true
 
 integTestCluster {
-    setting 'clusterName',     'ESTest'
-    setting 'version', "$elasticsearchVersion"
-    setting 'httpPort', '9200'
+    setting 'cluster.name',     'ESTest'
+    setting 'network.host',     'localhost'
+    //setting 'version',          "$elasticsearchVersion"
+    setting 'http.port',        '9200'
 }
 
 // check style can be disabled, or you can configure a different checkstyle file
