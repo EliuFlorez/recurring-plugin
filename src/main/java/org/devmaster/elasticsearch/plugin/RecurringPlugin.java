@@ -55,7 +55,7 @@ public class RecurringPlugin extends Plugin implements MapperPlugin, ScriptPlugi
 
         @Override
         public String getType() {
-            return "native";
+            return "rec";
         }
 
         @Override
@@ -88,6 +88,7 @@ public class RecurringPlugin extends Plugin implements MapperPlugin, ScriptPlugi
             	SearchScript.Factory factory = occurrencesBetween::new;
                 return context.factoryClazz.cast(factory);
             }
+            
             throw new IllegalArgumentException("Unknown script name " + scriptSource);
         }
 
@@ -254,6 +255,7 @@ public class RecurringPlugin extends Plugin implements MapperPlugin, ScriptPlugi
 		        return new OccurrencesBetweenSearchScript(params, lookup, context);
 		    }
 		}
+		
     }
     
 }

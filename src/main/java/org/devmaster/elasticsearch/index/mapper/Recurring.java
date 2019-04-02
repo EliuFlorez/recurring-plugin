@@ -86,7 +86,7 @@ public final class Recurring {
         }
     }
 
-    boolean occurBetween(String start, String end) throws ParseException {
+    public boolean occurBetween(String start, String end) throws ParseException {
         return occurBetween(new LocalDate(start), new LocalDate(end));
     }
 
