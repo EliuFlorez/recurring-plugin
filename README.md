@@ -10,14 +10,15 @@ It was tested in ES 6.6.1
 ## Getting start
 
 ### Compiling and installing plugin
+rm -rf ~/.gradle/caches/
  
-Generating zip file, execute command bellow, the file will be created in folder `target\releases`.
+Generating zip file, execute command bellow, the file will be created in folder `build\distributions`.
 
-```$mvn clean package```
+```./gradlew clean build```
 
 To installing plugin in elasticsearch, run this command in your elasticsearch server.
 
-```$bin/plugin install recurring-plugin-1.0.zip```
+```$bin/elasticsearch-plugin install recurring-plugin-1.0.zip```
 
 ## Recurring Type
 Mapper type called _recurring_ to support recurrents dates. The declaration looks as follows:
@@ -417,7 +418,6 @@ RESPONSE
 
 ```
 
-
 Example in ES 5.0.0
 
 PUT /sample
@@ -442,11 +442,64 @@ PUT /sample
 				"title": {
 					"type": "string",
 					"fields": {
-						"analyzed": { "type": "string", "analyzer": "myAnalyzer"},
-						"raw": { "type": "string", "index": "not_analyzed"}
+						"analyzed": { 
+							"type": "string", 
+							"analyzer": "myAnalyzer"
+						},
+						"raw": { 
+							"type": "string", 
+							"index": "not_analyzed"
+						}
 					}
 				},
-				"recurrent_date": { "type": "recurring" }
+				"recurrent_date": { 
+					"type": "recurring" 
+				}
+			}
+		}
+	}
+}
+```
+
+Example in ES 6.0.0
+
+PUT /sample
+```json
+{
+	"settings": {
+		"index": {
+			"number_of_shards" : 2,
+            "number_of_replicas" : 0,
+            "analysis": {
+            	"analyzer": {
+            		"myAnalyzer": {
+            			"type": "brazilian"
+            		}
+            	}
+            }
+		}
+	},
+	"mappings": {
+		"type1": {
+			"properties": {
+				"title": {
+					"type": "text",
+					"fields": {
+						"analyzed": { 
+							"type": "text", 
+							"analyzer": "myAnalyzer"
+						},
+						"raw": { 
+							"type": "text"
+						},
+						"keyword" : {
+							"type" : "keyword"
+						}
+					}
+				},
+				"recurrent_date": { 
+					"type": "recurring" 
+				}
 			}
 		}
 	}

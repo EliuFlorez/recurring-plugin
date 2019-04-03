@@ -53,10 +53,10 @@ public class RecurringPlugin extends Plugin implements MapperPlugin, ScriptPlugi
 
     private static class RecurringEngine implements ScriptEngine {
 
-        @Override
-        public String getType() {
-            return "rec";
-        }
+    	@Override
+		public String getType() {
+			return "native";
+		}
 
         @Override
         public <T> T compile(String scriptName, String scriptSource, ScriptContext<T> context, Map<String, String> params) {
@@ -88,7 +88,6 @@ public class RecurringPlugin extends Plugin implements MapperPlugin, ScriptPlugi
             	SearchScript.Factory factory = occurrencesBetween::new;
                 return context.factoryClazz.cast(factory);
             }
-            
             throw new IllegalArgumentException("Unknown script name " + scriptSource);
         }
 
