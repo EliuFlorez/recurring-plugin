@@ -24,8 +24,6 @@ import java.util.Map;
 
 public class NextOccurrenceSearchScript extends AbstractRecurringSearchScript {
 
-    public static final String SCRIPT_NAME = "nextOccurrence";
-
     private static final String PARAM_FIELD = "field";
     private static final String PARAM_FROM = "from";
 

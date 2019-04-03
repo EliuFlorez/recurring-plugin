@@ -24,8 +24,6 @@ import java.util.Map;
 
 public class HasOccurrencesAtSearchScript extends AbstractRecurringSearchScript {
 
-    public static final String SCRIPT_NAME = "hasOccurrencesAt";
-
     private static final String PARAM_FIELD = "field";
     private static final String PARAM_DATE = "date";
 

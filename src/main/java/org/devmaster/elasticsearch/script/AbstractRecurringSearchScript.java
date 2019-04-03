@@ -30,7 +30,7 @@ abstract class AbstractRecurringSearchScript extends SearchScript {
 		super(params, lookup, leafContext);
 		this.params = params;
 	}
-	
+    
     @SuppressWarnings("unchecked")
 	protected Recurring getRecurring(String fieldName) {
         if (params.containsKey(fieldName)) {

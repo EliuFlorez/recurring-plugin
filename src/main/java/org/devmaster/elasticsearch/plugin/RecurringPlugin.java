@@ -30,6 +30,7 @@ import org.elasticsearch.plugins.ScriptPlugin;
 import org.apache.lucene.index.LeafReaderContext;
 import org.elasticsearch.common.settings.Settings;
 import org.elasticsearch.script.SearchScript;
+import org.elasticsearch.script.FilterScript;
 import org.elasticsearch.script.ScriptContext;
 import org.elasticsearch.script.ScriptEngine;
 import org.elasticsearch.search.lookup.SearchLookup;
@@ -60,33 +61,63 @@ public class RecurringPlugin extends Plugin implements MapperPlugin, ScriptPlugi
 
         @Override
         public <T> T compile(String scriptName, String scriptSource, ScriptContext<T> context, Map<String, String> params) {
-            if (context.equals(SearchScript.CONTEXT) == false) {
+        	if (context.equals(SearchScript.CONTEXT) == false && context.equals(FilterScript.CONTEXT) == false) {
                 throw new IllegalArgumentException(getType() + " scripts cannot be used for context [" + context.name + "]");
             }
             // we use the script "source" as the script identifier
             if ("hasAnyOccurrenceBetween".equals(scriptSource)) {
-            	SearchScript.Factory factory = hasAnyOccurrenceBetween::new;
-                return context.factoryClazz.cast(factory);
+            	if (context.equals(SearchScript.CONTEXT) == true) {
+            		SearchScript.Factory factory = hasAnyOccurrenceBetweenSearch::new;
+                    return context.factoryClazz.cast(factory);
+            	} else if (context.equals(FilterScript.CONTEXT) == true) {
+            		FilterScript.Factory factory = (p, lookup) -> hasAnyOccurrenceBetweenFilter(p, lookup);
+            		return context.factoryClazz.cast(factory);
+            	}
             }
             if ("hasOccurrencesAt".equals(scriptSource)) {
-            	SearchScript.Factory factory = HasOccurrencesAt::new;
-                return context.factoryClazz.cast(factory);
+            	if (context.equals(SearchScript.CONTEXT) == true) {
+            		SearchScript.Factory factory = HasOccurrencesAtSearch::new;
+                    return context.factoryClazz.cast(factory);
+            	} else if (context.equals(FilterScript.CONTEXT) == true) {
+            		FilterScript.Factory factory = (p, lookup) -> HasOccurrencesAtFilter(p, lookup);
+                    return context.factoryClazz.cast(factory);
+            	}
             }
             if ("nextOccurrence".equals(scriptSource)) {
-            	SearchScript.Factory factory = nextOccurrence::new;
-                return context.factoryClazz.cast(factory);
+            	if (context.equals(SearchScript.CONTEXT) == true) {
+            		SearchScript.Factory factory = nextOccurrenceSearch::new;
+                    return context.factoryClazz.cast(factory);
+            	} else if (context.equals(FilterScript.CONTEXT) == true) {
+            		FilterScript.Factory factory = (p, lookup) -> nextOccurrenceFilter(p, lookup);
+                    return context.factoryClazz.cast(factory);
+            	}
             }
             if ("notHasExpired".equals(scriptSource)) {
-            	SearchScript.Factory factory = notHasExpired::new;
-                return context.factoryClazz.cast(factory);
+            	if (context.equals(SearchScript.CONTEXT) == true) {
+            		SearchScript.Factory factory = notHasExpiredSearch::new;
+                    return context.factoryClazz.cast(factory);
+            	} else if (context.equals(FilterScript.CONTEXT) == true) {
+            		FilterScript.Factory factory = (p, lookup) -> notHasExpiredFilter(p, lookup);
+                    return context.factoryClazz.cast(factory);
+            	}
             }
             if ("occurBetween".equals(scriptSource)) {
-            	SearchScript.Factory factory = occurBetween::new;
-                return context.factoryClazz.cast(factory);
+            	if (context.equals(SearchScript.CONTEXT) == true) {
+            		SearchScript.Factory factory = occurBetweenSearch::new;
+                    return context.factoryClazz.cast(factory);
+            	} else if (context.equals(FilterScript.CONTEXT) == true) {
+            		FilterScript.Factory factory = (p, lookup) -> occurBetweenFilter(p, lookup);
+                    return context.factoryClazz.cast(factory);
+            	}
             }
             if ("occurrencesBetween".equals(scriptSource)) {
-            	SearchScript.Factory factory = occurrencesBetween::new;
-                return context.factoryClazz.cast(factory);
+            	if (context.equals(SearchScript.CONTEXT) == true) {
+            		SearchScript.Factory factory = occurrencesBetweenSearch::new;
+                    return context.factoryClazz.cast(factory);
+            	} else if (context.equals(FilterScript.CONTEXT) == true) {
+            		FilterScript.Factory factory = (p, lookup) -> occurrencesBetweenFilter(p, lookup);
+                    return context.factoryClazz.cast(factory);
+            	}
             }
             throw new IllegalArgumentException("Unknown script name " + scriptSource);
         }
@@ -95,13 +126,14 @@ public class RecurringPlugin extends Plugin implements MapperPlugin, ScriptPlugi
         public void close() {
             // optionally close resources
         }
-
-        private static class hasAnyOccurrenceBetween implements SearchScript.LeafFactory {
+        
+        // Factory: hasAnyOccurrenceBetween
+        private static class hasAnyOccurrenceBetweenSearch implements SearchScript.LeafFactory {
         	
             private final Map<String, Object> params;
             private final SearchLookup lookup;
             
-            private hasAnyOccurrenceBetween(Map<String, Object> params, SearchLookup lookup) {
+            private hasAnyOccurrenceBetweenSearch(Map<String, Object> params, SearchLookup lookup) {
                 if (params.containsKey("field") == false) {
                     throw new IllegalArgumentException("Missing parameter [field]");
                 }
@@ -114,24 +146,44 @@ public class RecurringPlugin extends Plugin implements MapperPlugin, ScriptPlugi
                 this.params = params;
                 this.lookup = lookup;
             }
-
+            
             @Override
             public boolean needs_score() {
                 return false;  // Return true if the script needs the score
             }
 
             @Override
-            public SearchScript newInstance(LeafReaderContext context)throws IOException {
+            public SearchScript newInstance(LeafReaderContext context) throws IOException {
                 return new HasAnyOccurrenceBetweenSearchScript(params, lookup, context);
             }
         }
+        // --------------
+        private FilterScript.LeafFactory hasAnyOccurrenceBetweenFilter(Map<String, Object> params, SearchLookup lookup) {
+        	SearchScript.LeafFactory searchLeafFactory = new hasAnyOccurrenceBetweenSearch(params, lookup);
+        	return ctx -> {
+                SearchScript search = searchLeafFactory.newInstance(ctx);
+                return new FilterScript(params, lookup, ctx) {
+                    @Override
+                    public boolean execute() {
+                        return search.runAsDouble() != 0.0;
+                    }
+                    
+                    @Override
+                    public void setDocument(int docid) {
+                    	search.setDocument(docid);
+                    }
+                };
+            };
+        }
+        // FactoryEnd: hasAnyOccurrenceBetween
         
-    	private static class HasOccurrencesAt implements SearchScript.LeafFactory {
+        // Factory: HasOccurrencesAt
+    	private static class HasOccurrencesAtSearch implements SearchScript.LeafFactory {
         	
             private final Map<String, Object> params;
             private final SearchLookup lookup;
             
-            private HasOccurrencesAt(Map<String, Object> params, SearchLookup lookup) {
+            private HasOccurrencesAtSearch(Map<String, Object> params, SearchLookup lookup) {
                 if (params.containsKey("field") == false) {
                     throw new IllegalArgumentException("Missing parameter [field]");
                 }
@@ -148,17 +200,37 @@ public class RecurringPlugin extends Plugin implements MapperPlugin, ScriptPlugi
             }
 
             @Override
-            public SearchScript newInstance(LeafReaderContext context)throws IOException {
+            public SearchScript newInstance(LeafReaderContext context) throws IOException {
                 return new HasOccurrencesAtSearchScript(params, lookup, context);
             }
         }
+    	// --------------
+    	private FilterScript.LeafFactory HasOccurrencesAtFilter(Map<String, Object> params, SearchLookup lookup) {
+        	SearchScript.LeafFactory searchLeafFactory = new HasOccurrencesAtSearch(params, lookup);
+        	return ctx -> {
+                SearchScript search = searchLeafFactory.newInstance(ctx);
+                return new FilterScript(params, lookup, ctx) {
+                    @Override
+                    public boolean execute() {
+                        return search.runAsDouble() != 0.0;
+                    }
+                    
+                    @Override
+                    public void setDocument(int docid) {
+                    	search.setDocument(docid);
+                    }
+                };
+            };
+        }
+    	// FactoryEnd: HasOccurrencesAt
     	
-    	private static class nextOccurrence implements SearchScript.LeafFactory {
+    	// Factory: nextOccurrence
+    	private static class nextOccurrenceSearch implements SearchScript.LeafFactory {
         	
             private final Map<String, Object> params;
             private final SearchLookup lookup;
             
-            private nextOccurrence(Map<String, Object> params, SearchLookup lookup) {
+            private nextOccurrenceSearch(Map<String, Object> params, SearchLookup lookup) {
                 if (params.containsKey("field") == false) {
                     throw new IllegalArgumentException("Missing parameter [field]");
                 }
@@ -172,17 +244,37 @@ public class RecurringPlugin extends Plugin implements MapperPlugin, ScriptPlugi
             }
 
             @Override
-            public SearchScript newInstance(LeafReaderContext context)throws IOException {
+            public SearchScript newInstance(LeafReaderContext context) throws IOException {
                 return new NextOccurrenceSearchScript(params, lookup, context);
             }
         }
+    	// --------------
+    	private FilterScript.LeafFactory nextOccurrenceFilter(Map<String, Object> params, SearchLookup lookup) {
+        	SearchScript.LeafFactory searchLeafFactory = new nextOccurrenceSearch(params, lookup);
+        	return ctx -> {
+                SearchScript search = searchLeafFactory.newInstance(ctx);
+                return new FilterScript(params, lookup, ctx) {
+                    @Override
+                    public boolean execute() {
+                        return search.runAsDouble() != 0.0;
+                    }
+                    
+                    @Override
+                    public void setDocument(int docid) {
+                    	search.setDocument(docid);
+                    }
+                };
+            };
+        }
+    	// FactoryEnd: nextOccurrence
 		
-		private static class notHasExpired implements SearchScript.LeafFactory {
+    	// Factory: notHasExpired
+		private static class notHasExpiredSearch implements SearchScript.LeafFactory {
 			
 		    private final Map<String, Object> params;
 		    private final SearchLookup lookup;
 		    
-		    private notHasExpired(Map<String, Object> params, SearchLookup lookup) {
+		    private notHasExpiredSearch(Map<String, Object> params, SearchLookup lookup) {
 		        if (params.containsKey("field") == false) {
 		            throw new IllegalArgumentException("Missing parameter [field]");
 		        }
@@ -196,17 +288,37 @@ public class RecurringPlugin extends Plugin implements MapperPlugin, ScriptPlugi
 		    }
 		
 		    @Override
-		    public SearchScript newInstance(LeafReaderContext context)throws IOException {
+		    public SearchScript newInstance(LeafReaderContext context) throws IOException {
 		        return new NotHasExpiredSearchScript(params, lookup, context);
 		    }
 		}
+		// -------------
+		private FilterScript.LeafFactory notHasExpiredFilter(Map<String, Object> params, SearchLookup lookup) {
+        	SearchScript.LeafFactory searchLeafFactory = new notHasExpiredSearch(params, lookup);
+        	return ctx -> {
+                SearchScript search = searchLeafFactory.newInstance(ctx);
+                return new FilterScript(params, lookup, ctx) {
+                    @Override
+                    public boolean execute() {
+                        return search.runAsDouble() != 0.0;
+                    }
+                    
+                    @Override
+                    public void setDocument(int docid) {
+                    	search.setDocument(docid);
+                    }
+                };
+            };
+        }
+		// FactoryEnd: notHasExpired
 		
-		private static class occurBetween implements SearchScript.LeafFactory {
+		// Factory: occurBetween
+		private static class occurBetweenSearch implements SearchScript.LeafFactory {
         	
             private final Map<String, Object> params;
             private final SearchLookup lookup;
             
-            private occurBetween(Map<String, Object> params, SearchLookup lookup) {
+            private occurBetweenSearch(Map<String, Object> params, SearchLookup lookup) {
                 if (params.containsKey("field") == false) {
                     throw new IllegalArgumentException("Missing parameter [field]");
                 }
@@ -226,17 +338,37 @@ public class RecurringPlugin extends Plugin implements MapperPlugin, ScriptPlugi
             }
 
             @Override
-            public SearchScript newInstance(LeafReaderContext context)throws IOException {
+            public SearchScript newInstance(LeafReaderContext context) throws IOException {
                 return new OccurBetweenSearchScript(params, lookup, context);
             }
         }
+		// -----------
+		private FilterScript.LeafFactory occurBetweenFilter(Map<String, Object> params, SearchLookup lookup) {
+        	SearchScript.LeafFactory searchLeafFactory = new occurBetweenSearch(params, lookup);
+        	return ctx -> {
+                SearchScript search = searchLeafFactory.newInstance(ctx);
+                return new FilterScript(params, lookup, ctx) {
+                    @Override
+                    public boolean execute() {
+                        return search.runAsDouble() != 0.0;
+                    }
+                    
+                    @Override
+                    public void setDocument(int docid) {
+                    	search.setDocument(docid);
+                    }
+                };
+            };
+        }
+		// FactoryEnd: occurBetween
 
-		private static class occurrencesBetween implements SearchScript.LeafFactory {
+		// Factory: occurrencesBetween
+		private static class occurrencesBetweenSearch implements SearchScript.LeafFactory {
 			
 		    private final Map<String, Object> params;
 		    private final SearchLookup lookup;
 		    
-		    private occurrencesBetween(Map<String, Object> params, SearchLookup lookup) {
+		    private occurrencesBetweenSearch(Map<String, Object> params, SearchLookup lookup) {
 		        if (params.containsKey("field") == false) {
 		            throw new IllegalArgumentException("Missing parameter [field]");
 		        }
@@ -250,11 +382,29 @@ public class RecurringPlugin extends Plugin implements MapperPlugin, ScriptPlugi
 		    }
 		
 		    @Override
-		    public SearchScript newInstance(LeafReaderContext context)throws IOException {
+		    public SearchScript newInstance(LeafReaderContext context) throws IOException {
 		        return new OccurrencesBetweenSearchScript(params, lookup, context);
 		    }
 		}
-		
+		// ------------------
+		private FilterScript.LeafFactory occurrencesBetweenFilter(Map<String, Object> params, SearchLookup lookup) {
+        	SearchScript.LeafFactory searchLeafFactory = new occurrencesBetweenSearch(params, lookup);
+        	return ctx -> {
+                SearchScript search = searchLeafFactory.newInstance(ctx);
+                return new FilterScript(params, lookup, ctx) {
+                    @Override
+                    public boolean execute() {
+                        return search.runAsDouble() != 0.0;
+                    }
+                    
+                    @Override
+                    public void setDocument(int docid) {
+                    	search.setDocument(docid);
+                    }
+                };
+            };
+        }
+		// FactoryEnd: occurrencesBetween
     }
     
 }

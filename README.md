@@ -10,8 +10,7 @@ It was tested in ES 6.6.1
 ## Getting start
 
 ### Compiling and installing plugin
-rm -rf ~/.gradle/caches/
- 
+r
 Generating zip file, execute command bellow, the file will be created in folder `build\distributions`.
 
 ```./gradlew clean build```
@@ -88,13 +87,21 @@ Script field returns `true` if event is not expired considering server date.
 PUT `sample/event/_mapping`
 ```
 {
-  "event": {
-    "properties": {
-      "name": {
-        "type": "string"
-      },
-      "recurrent_date": {
-        "type": "recurring"
+  "settings": {
+    "index": {
+      "number_of_shards": 1,
+      "number_of_replicas": 0
+    }
+  },
+  "mappings": {
+    "event": {
+      "properties": {
+        "name": {
+          "type": "text"
+        },
+        "recurrent_date": {
+          "type": "recurring"
+        }
       }
     }
   }
@@ -154,13 +161,13 @@ PUT `sample/event/4`
 POST `sample/event/_search`
 ```
 {
-  "fields": {
-    "fields": [
-      "name"
-    ],
-    "script_fields": {
-      "nextOccur": {
-        "script": "nextOccurrence",
+  "query" : {
+    "match_all": {}
+  },
+  "script_fields": {
+    "nextOccur": {
+      "script": {
+        "source": "nextOccurrence",
         "lang": "native",
         "params": {
           "field": "recurrent_date"
@@ -190,9 +197,6 @@ RESPONSE
         "_id": "3",
         "_score": 1,
         "fields": {
-          "name": [
-            "Halloween"
-          ],
           "nextOccur": [
             "2017-10-31"
           ]
@@ -204,9 +208,6 @@ RESPONSE
         "_id": "2",
         "_score": 1,
         "fields": {
-          "name": [
-            "Mother's day"
-          ],
           "nextOccur": [
             "2017-05-14"
           ]
@@ -227,11 +228,13 @@ POST `sample/event/_search`
     "bool": {
       "filter": {
         "script": {
-          "script": "hasOccurrencesAt",
-          "lang": "native",
-          "params": {
-            "field": "recurrent_date",
-            "date": "2019-05-12"
+          "script": {
+            "source": "hasOccurrencesAt",
+            "lang": "native",
+            "params": {
+              "field": "recurrent_date",
+              "date": "2015-01-31"
+            }
           }
         }
       }
@@ -281,12 +284,14 @@ POST `sample/event/_search`
     "bool": {
       "filter": {
         "script": {
-          "script": "occurBetween",
-          "lang": "native",
-          "params": {
-            "field": "recurrent_date",
-            "start": "2016-01-31",
-            "end": "2016-07-26"
+          "script": {
+            "source": "occurBetween",
+            "lang": "native",
+            "params": {
+              "field": "recurrent_date",
+              "start": "2016-01-31",
+			  "end": "2016-07-26"
+            }
           }
         }
       }
@@ -348,10 +353,12 @@ POST `sample/event/_search`
     "bool": {
       "filter": {
         "script": {
-          "script": "notHasExpired",
-          "lang": "native",
-          "params": {
-            "field": "recurrent_date"
+          "script": {
+            "source": "notHasExpired",
+            "lang": "native",
+            "params": {
+              "field": "recurrent_date"
+            }
           }
         }
       }
@@ -414,124 +421,5 @@ RESPONSE
       }
     ]
   }
-}
-
-```
-
-Example in ES 5.0.0
-
-PUT /sample
-```json
-{
-	"settings": {
-		"index": {
-			"number_of_shards" : 2,
-            "number_of_replicas" : 0,
-            "analysis": {
-            	"analyzer": {
-            		"myAnalyzer": {
-            			"type": "brazilian"
-            		}
-            	}
-            }
-		}
-	},
-	"mappings": {
-		"type1": {
-			"properties": {
-				"title": {
-					"type": "string",
-					"fields": {
-						"analyzed": { 
-							"type": "string", 
-							"analyzer": "myAnalyzer"
-						},
-						"raw": { 
-							"type": "string", 
-							"index": "not_analyzed"
-						}
-					}
-				},
-				"recurrent_date": { 
-					"type": "recurring" 
-				}
-			}
-		}
-	}
-}
-```
-
-Example in ES 6.0.0
-
-PUT /sample
-```json
-{
-	"settings": {
-		"index": {
-			"number_of_shards" : 2,
-            "number_of_replicas" : 0,
-            "analysis": {
-            	"analyzer": {
-            		"myAnalyzer": {
-            			"type": "brazilian"
-            		}
-            	}
-            }
-		}
-	},
-	"mappings": {
-		"type1": {
-			"properties": {
-				"title": {
-					"type": "text",
-					"fields": {
-						"analyzed": { 
-							"type": "text", 
-							"analyzer": "myAnalyzer"
-						},
-						"raw": { 
-							"type": "text"
-						},
-						"keyword" : {
-							"type" : "keyword"
-						}
-					}
-				},
-				"recurrent_date": { 
-					"type": "recurring" 
-				}
-			}
-		}
-	}
-}
-```
-
-PUT /sample/type1/1
-```json
-{
-	"title": "Dia dos pais",
-	"recurrent_date": {
-		"start_date": "2016-08-14",
-		"rrule": "RRULE:FREQ=YEARLY;BYMONTH=8;BYDAY=2SU;WKST=SU"
-	}
-}
-```
-
-POST /sample/_search
-```json
-{
-	"_source": true,
-	"script_fields": {
-        "nextOccur": {
-            "script": {
-                "inline": "nextOccurrence",
-                "lang": "native",
-                "params": {
-                    "field": "recurrent_date",
-                    "from": "2017-01-01"
-                }
-            }
-        }
-    }
 }
 ```

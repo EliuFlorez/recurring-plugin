@@ -24,8 +24,6 @@ import java.util.Map;
 
 public class OccurBetweenSearchScript extends AbstractRecurringSearchScript {
 
-    public static final String SCRIPT_NAME = "occurBetween";
-
     private static final String PARAM_FIELD = "field";
     private static final String PARAM_START = "start";
     private static final String PARAM_END = "end";

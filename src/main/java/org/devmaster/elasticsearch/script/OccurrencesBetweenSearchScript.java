@@ -24,8 +24,6 @@ import java.util.Map;
 
 public class OccurrencesBetweenSearchScript extends AbstractRecurringSearchScript {
 
-    public static final String SCRIPT_NAME = "occurrencesBetween";
-
     private static final String PARAM_FIELD = "field";
     private static final String PARAM_START = "start";
     private static final String PARAM_END = "end";
@@ -37,7 +35,6 @@ public class OccurrencesBetweenSearchScript extends AbstractRecurringSearchScrip
     @Override
     public Object run() {
         Recurring recurring = getRecurring(getParamValueFor(PARAM_FIELD));
-        
         if (recurring != null) {
             LocalDate start = new LocalDate(getParamValueFor(PARAM_START));
             LocalDate end = new LocalDate(getParamValueFor(PARAM_END));
@@ -47,7 +44,6 @@ public class OccurrencesBetweenSearchScript extends AbstractRecurringSearchScrip
                 //throw new IllegalArgumentException("Error while check occurrences between. Error: " + e.getMessage());
             }
         }
-        
         return "fail_2";
     }
     

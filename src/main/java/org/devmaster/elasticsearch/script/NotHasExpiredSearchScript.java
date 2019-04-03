@@ -23,7 +23,6 @@ import java.util.Map;
 
 public class NotHasExpiredSearchScript extends AbstractRecurringSearchScript {
 
-    public static final String SCRIPT_NAME = "notHasExpired";
     private static final String PARAM_FIELD = "field";
 
     public NotHasExpiredSearchScript(Map<String, Object> params, SearchLookup lookup, LeafReaderContext leafContext) {
