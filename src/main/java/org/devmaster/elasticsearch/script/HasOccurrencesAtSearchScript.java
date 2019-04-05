@@ -33,7 +33,7 @@ public class HasOccurrencesAtSearchScript extends AbstractRecurringSearchScript 
 
     @Override
     public Object run() {
-        Recurring recurring = getRecurring(getParamValueFor(PARAM_FIELD));
+    	Recurring recurring = getRecurring(getParamValueFor(PARAM_FIELD));
         String date = getParamValueFor(PARAM_DATE);
         try {
             return recurring != null && recurring.hasOccurrencesAt(new LocalDate(date));
@@ -44,6 +44,6 @@ public class HasOccurrencesAtSearchScript extends AbstractRecurringSearchScript 
     
     @Override
     public double runAsDouble() {
-        return 0;
+        return run() != null ? 0.1d : 0.0d;
     }
 }

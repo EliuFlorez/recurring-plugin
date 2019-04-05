@@ -65,7 +65,7 @@ public class RecurringPlugin extends Plugin implements MapperPlugin, ScriptPlugi
                 throw new IllegalArgumentException(getType() + " scripts cannot be used for context [" + context.name + "]");
             }
             // we use the script "source" as the script identifier
-            if ("hasAnyOccurrenceBetween".equals(scriptSource)) {
+        	if ("hasAnyOccurrenceBetween".equals(scriptSource)) {
             	if (context.equals(SearchScript.CONTEXT) == true) {
             		SearchScript.Factory factory = hasAnyOccurrenceBetweenSearch::new;
                     return context.factoryClazz.cast(factory);
@@ -405,6 +405,7 @@ public class RecurringPlugin extends Plugin implements MapperPlugin, ScriptPlugi
             };
         }
 		// FactoryEnd: occurrencesBetween
+        
     }
     
 }

@@ -31,7 +31,7 @@ public class NotHasExpiredSearchScript extends AbstractRecurringSearchScript {
 
     @Override
     public Object run() {
-        Recurring recurring = getRecurring(getParamValueFor(PARAM_FIELD));
+    	Recurring recurring = getRecurring(getParamValueFor(PARAM_FIELD));
         try {
             return recurring != null && recurring.notHasExpired();
         } catch (ParseException e) {
@@ -42,6 +42,6 @@ public class NotHasExpiredSearchScript extends AbstractRecurringSearchScript {
     
     @Override
     public double runAsDouble() {
-        return 0;
+        return run() != null ? 0.1d : 0.0d;
     }
 }

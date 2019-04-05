@@ -172,7 +172,9 @@ public class RecurringFieldMapper extends FieldMapper {
 
         this.startDateMapper = startDateMapper;
         this.endDateMapper = endDateMapper;
-        this.rruleMapper = rruleMapper;
+        for (Mapper mapper : this.rruleMapper = rruleMapper) {
+        	mapper.name();
+        };
     }
     
     @Override
@@ -223,8 +225,6 @@ public class RecurringFieldMapper extends FieldMapper {
         return (RecurringFieldType) super.fieldType();
     }
     
-    //cluster.routing.allocation.disk.threshold_enabled: false
-    
     @Override
     public Iterator<Mapper> iterator() {
         List<? extends Mapper> extras = Arrays.asList(startDateMapper, endDateMapper, rruleMapper);
@@ -233,13 +233,15 @@ public class RecurringFieldMapper extends FieldMapper {
     
     @Override
     public XContentBuilder toXContent(XContentBuilder builder, Params params) throws IOException {
-    	super.toXContent(builder, params);
-        return builder;
+    	builder.startObject(simpleName());
+        builder.field("type", CONTENT_TYPE);
+        startDateMapper.toXContent(builder, params);
+        endDateMapper.toXContent(builder, params);
+        rruleMapper.toXContent(builder, params);
+        multiFields.toXContent(builder, params);
+        builder.endObject();
+        builder.close();
+        return super.toXContent(builder, params);
     }
-    
-    @Override
-	protected void doXContentBody(XContentBuilder builder, boolean includeDefaults, Params params) throws IOException {
-		super.doXContentBody(builder, includeDefaults, params);
-	}
     
 }

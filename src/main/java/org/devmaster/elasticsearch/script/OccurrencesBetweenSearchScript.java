@@ -31,10 +31,10 @@ public class OccurrencesBetweenSearchScript extends AbstractRecurringSearchScrip
     public OccurrencesBetweenSearchScript(Map<String, Object> params, SearchLookup lookup, LeafReaderContext leafContext) {
         super(params, lookup, leafContext);
     }
-
+    
     @Override
     public Object run() {
-        Recurring recurring = getRecurring(getParamValueFor(PARAM_FIELD));
+    	Recurring recurring = getRecurring(getParamValueFor(PARAM_FIELD));
         if (recurring != null) {
             LocalDate start = new LocalDate(getParamValueFor(PARAM_START));
             LocalDate end = new LocalDate(getParamValueFor(PARAM_END));
@@ -49,6 +49,6 @@ public class OccurrencesBetweenSearchScript extends AbstractRecurringSearchScrip
     
     @Override
     public double runAsDouble() {
-        return 0;
+        return run() != null ? 0.1d : 0.0d;
     }
 }

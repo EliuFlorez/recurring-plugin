@@ -1,12 +1,12 @@
 package org.devmaster.elasticsearch.plugin;
 
-import org.elasticsearch.action.index.IndexRequestBuilder;
+//import org.elasticsearch.action.index.IndexRequestBuilder;
 //import org.elasticsearch.action.search.SearchResponse;
 //import org.elasticsearch.script.Script;
 //import org.elasticsearch.script.ScriptType;
-import org.elasticsearch.common.xcontent.XContentBuilder;
-import org.elasticsearch.common.xcontent.XContentFactory;
-import org.elasticsearch.common.xcontent.XContentType;
+//import org.elasticsearch.common.xcontent.XContentBuilder;
+//import org.elasticsearch.common.xcontent.XContentFactory;
+//import org.elasticsearch.common.xcontent.XContentType;
 
 //import static org.elasticsearch.index.query.QueryBuilders.boolQuery;
 //import static org.elasticsearch.index.query.QueryBuilders.scriptQuery;
@@ -18,16 +18,16 @@ import org.elasticsearch.common.xcontent.XContentType;
 //import org.elasticsearch.index.query.QueryBuilder;
 //import org.elasticsearch.index.query.ScriptQueryBuilder;
 
-import java.io.IOException;
+//import java.io.IOException;
 //import java.util.HashMap;
-import java.util.List;
+//import java.util.List;
 //import java.util.Map;
-import java.util.ArrayList;
+//import java.util.ArrayList;
 
 public class RecurringSearchScriptTests extends AbstractSearchScriptTestCase {
 
 public void testRecurringScript() throws Exception {
-
+/*
 String mapping = XContentFactory.jsonBuilder()
 .startObject()
 .startObject("type")
@@ -71,7 +71,7 @@ indexBuilders.add(client().prepareIndex("test", "type", "5")
 .setSource(createDoc("Marnaco Event", "2017-06-01", "2017-06-30", null)));
 
 indexRandom(true, indexBuilders);
-/*
+
 // Show has any occurrence between
 Map<String, Object> params = new HashMap<>();
 params.put("field", "recurrent_date");
@@ -173,7 +173,7 @@ logger.info(searchResponse.toString());
 assertNoFailures(searchResponse);
 */
 }
-
+/*
 private XContentBuilder createDoc(String name, String start_date, String end_date, String rrule) throws IOException {
 return XContentFactory.jsonBuilder()
 .startObject()
@@ -185,5 +185,5 @@ return XContentFactory.jsonBuilder()
 .endObject()
 .endObject();
 }
-
+*/
 }
