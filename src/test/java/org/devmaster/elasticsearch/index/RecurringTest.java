@@ -14,8 +14,8 @@ import java.text.ParseException;
 import java.util.List;
 
 public class RecurringTest {
-
-    public void testOccurrencesBetween() throws ParseException {
+	
+	public void testOccurrencesBetween() throws ParseException {
         
     	Recurring recurring = recurring("2016-01-01", null, "RRULE:FREQ=WEEKLY;BYDAY=TU,TH;WKST=SU");
         LocalDate start = new LocalDate("2016-01-02");

@@ -37,6 +37,8 @@ public class HasAnyOccurrenceBetweenSearchScript extends AbstractRecurringSearch
         String startDate = getParamValueFor(PARAM_START);
         String endDate = getParamValueFor(PARAM_END);
         try {
+        	Logger("recurring:", recurring != null ? "true" : "false");
+        	Logger("hasAnyOccurrenceBetween:", recurring.hasAnyOccurrenceBetween(startDate, endDate) ? "true" : "false");
             return recurring != null && recurring.hasAnyOccurrenceBetween(startDate, endDate);
         } catch (ParseException e) {
             throw new IllegalArgumentException("Error while obtaining has any occurrence between. Error: " + e.getMessage());
@@ -45,6 +47,6 @@ public class HasAnyOccurrenceBetweenSearchScript extends AbstractRecurringSearch
     
     @Override
     public double runAsDouble() {
-        return run() != null ? 0.1d : 0.0d;
+    	return run() != null ? 0.1d : 0.0d;
     }
 }

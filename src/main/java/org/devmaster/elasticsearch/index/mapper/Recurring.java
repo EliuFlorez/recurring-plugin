@@ -165,15 +165,15 @@ public final class Recurring {
 
     public boolean hasAnyOccurrenceBetween(String start, String end) throws ParseException {
         Interval lookingAtInterval = new Interval(Instant.parse(start), Instant.parse(end));
-        Instant start_date = Instant.parse(getStartDate());
+        Instant startDate = Instant.parse(getStartDate());
         if (rrule == null) {
-            Interval interval = new Interval(start_date, Instant.parse(getEndDate()));
+            Interval interval = new Interval(startDate, Instant.parse(getEndDate()));
             return interval.abuts(lookingAtInterval) || interval.overlaps(lookingAtInterval);
         } else {
-            LocalDateIterator it = LocalDateIteratorFactory.createLocalDateIterator(rrule, new LocalDate(start_date), false);
+            LocalDateIterator it = LocalDateIteratorFactory.createLocalDateIterator(rrule, new LocalDate(startDate), false);
             it.advanceTo(lookingAtInterval.getStart().toLocalDate());
             if (it.hasNext()) {
-                for (LocalDate current = it.next(); !current.isAfter(lookingAtInterval.getEnd().toLocalDate()); current = it.next()) {
+                for (LocalDate current = it.next(); it.hasNext() && !current.isAfter(lookingAtInterval.getEnd().toLocalDate()); current = it.next()) {
                     if (lookingAtInterval.abuts(current.toInterval()) || lookingAtInterval.contains(current.toInterval())) {
                         return true;
                     }

@@ -14,6 +14,7 @@ r
 Generating zip file, execute command bellow, the file will be created in folder `build\distributions`.
 
 ```./gradlew clean build```
+/usr/share/elasticsearch/plugins
 
 To installing plugin in elasticsearch, run this command in your elasticsearch server.
 

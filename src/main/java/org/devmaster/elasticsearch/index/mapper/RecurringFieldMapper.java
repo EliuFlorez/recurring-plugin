@@ -43,7 +43,7 @@ import static org.apache.lucene.index.IndexOptions.DOCS;
 
 public class RecurringFieldMapper extends FieldMapper {
 
-    public static final String CONTENT_TYPE = "recurring";
+	public static final String CONTENT_TYPE = "recurring";
 
     private final DateFieldMapper startDateMapper;
     private final DateFieldMapper endDateMapper;
@@ -172,9 +172,7 @@ public class RecurringFieldMapper extends FieldMapper {
 
         this.startDateMapper = startDateMapper;
         this.endDateMapper = endDateMapper;
-        for (Mapper mapper : this.rruleMapper = rruleMapper) {
-        	mapper.name();
-        };
+        this.rruleMapper = rruleMapper;
     }
     
     @Override
@@ -235,13 +233,8 @@ public class RecurringFieldMapper extends FieldMapper {
     public XContentBuilder toXContent(XContentBuilder builder, Params params) throws IOException {
     	builder.startObject(simpleName());
         builder.field("type", CONTENT_TYPE);
-        startDateMapper.toXContent(builder, params);
-        endDateMapper.toXContent(builder, params);
-        rruleMapper.toXContent(builder, params);
-        multiFields.toXContent(builder, params);
         builder.endObject();
-        builder.close();
-        return super.toXContent(builder, params);
+        return builder;
     }
     
 }

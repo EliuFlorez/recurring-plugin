@@ -1,0 +1,241 @@
+PUT example_event
+{
+  "settings": {
+    "index": {
+      "number_of_shards": 1,
+      "number_of_replicas": 0
+    },
+    "analysis": {
+      "analyzer": {
+        "std_lang": {
+          "type": "standard",
+          "stopwords": "_english_"
+        }
+      }
+    }
+  },
+  "mappings": {
+    "event": {
+      "properties": {
+        "name": {
+          "type": "text",
+          "analyzer": "std_lang"
+        },
+        "recurrent_date": {
+          "type": "recurring"
+        }
+      }
+    }
+  }
+}
+
+POST example_event/event/1
+{
+  "name": "Christmas",
+  "recurrent_date": {
+    "start_date": "2015-12-25",
+    "rrule": "RRULE:FREQ=YEARLY;BYMONTH=12;BYMONTHDAY=25;WKST=SU"
+  }
+}
+
+POST example_event/event/2
+{
+  "name": "Mother's day",
+  "recurrent_date": {
+    "start_date": "2016-05-08",
+    "rrule": "RRULE:FREQ=YEARLY;BYMONTH=5;BYDAY=2SU;WKST=SU"
+  }
+}
+
+POST example_event/event/3
+{
+  "name": "Halloween",
+  "recurrent_date": {
+    "start_date": "2012-10-31",
+    "rrule": "RRULE:FREQ=YEARLY;BYMONTH=10;BYMONTHDAY=31;WKST=SU"
+  }
+}
+
+POST example_event/event/4
+{
+  "name": "5 maintenance monthly of cruze ",
+  "recurrent_date": {
+    "start_date": "2016-02-10",
+    "rrule": "RRULE:FREQ=MONTHLY;BYMONTHDAY=10;COUNT=5;WKST=SU"
+  }
+}
+
+PUT example_event/event/5
+{
+  "name": "Marnaco Event",
+  "recurrent_date": {
+    "start_date": "2017-06-01",
+    "start_end": "2017-06-30",
+    "rrule": null
+  }
+}
+
+GET example_event/_search
+
+hasAnyOccurrenceBetween:
+GET example_event/_search
+{
+  "query": {
+    "script": {
+      "script": {
+        "source": "hasAnyOccurrenceBetween",
+        "lang": "native",
+        "params": {
+          "field": "recurrent_date",
+          "start": "2017-06-27",
+          "end": "2017-06-27"
+        }
+      },
+      "boost": 1
+    }
+  }
+}
+
+nextOccurrence:
+GET example_event/_search
+{
+  "query": {
+    "script": {
+      "script": {
+        "source": "nextOccurrence",
+        "lang": "native",
+        "params": {
+          "field": "recurrent_date"
+        }
+      },
+      "boost": 1
+    }
+  }
+}
+
+nextOccurrence:
+GET example_event/_search
+{
+  "query": {
+    "script": {
+      "script": {
+        "source": "hasOccurrencesAt",
+        "lang": "native",
+        "params": {
+          "date": "2025-05-11",
+          "field": "recurrent_date"
+        }
+      },
+      "boost": 1
+    }
+  }
+}
+
+GET example_event/_search
+{
+  "query": {
+    "bool": {
+      "filter": {
+        "script": {
+          "script": {
+            "source": "hasOccurrencesAt",
+            "lang": "native",
+            "params": {
+              "field": "recurrent_date",
+              "date": "2019-05-12"
+            }
+          }
+        }
+      }
+    }
+  }
+}
+
+hasOccurrencesAt:
+GET example_event/_search
+{
+  "query": {
+    "script": {
+      "script": {
+        "source": "hasOccurrencesAt",
+        "lang": "native",
+        "params": {
+          "date": "2025-10-31",
+          "field": "recurrent_date"
+        }
+      },
+      "boost": 1
+    }
+  }
+}
+
+occurBetween:
+GET example_event/_search
+{
+  "timeout": "1d",
+  "query": {
+    "script": {
+      "script": {
+        "source": "occurBetween",
+        "lang": "native",
+        "params": {
+          "field": "recurrent_date",
+          "start": "2017-05-01",
+          "end": "2017-05-31"
+        }
+      },
+      "boost": 1
+    }
+  }
+}
+
+notHasExpired:
+GET example_event/_search
+{
+  "timeout": "1d",
+  "query": {
+    "script": {
+      "script": {
+        "source": "notHasExpired",
+        "lang": "native",
+        "params": {
+          "field": "recurrent_date"
+        }
+      },
+      "boost": 1
+    }
+  }
+}
+
+occurrencesBetween:
+GET example_event/_search
+{
+  "query": {
+    "script": {
+      "script": {
+        "source": "occurBetween",
+        "lang": "native",
+        "params": {
+          "field": "recurrent_date",
+          "start": "2017-01-01",
+          "end": "2018-05-31"
+        }
+      },
+      "boost": 1
+    }
+  },
+  "script_fields": {
+    "occur": {
+      "script": {
+        "source": "occurrencesBetween",
+        "lang": "native",
+        "params": {
+          "field": "recurrent_date",
+          "start": "2017-01-01",
+          "end": "2018-05-31"
+        }
+      },
+      "ignore_failure": false
+    }
+  }
+}

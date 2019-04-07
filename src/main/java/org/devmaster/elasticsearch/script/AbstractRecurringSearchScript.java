@@ -14,6 +14,8 @@
 
 package org.devmaster.elasticsearch.script;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.apache.lucene.index.LeafReaderContext;
 import org.devmaster.elasticsearch.index.mapper.Recurring;
 import org.devmaster.elasticsearch.index.mapper.RecurringFieldMapper;
@@ -24,29 +26,41 @@ import java.util.Map;
 
 abstract class AbstractRecurringSearchScript extends SearchScript {
 
+	private final SearchLookup lookup;
 	private final Map<String, Object> params;
+	private final static Logger logger = LogManager.getLogger(AbstractRecurringSearchScript.class);
 	
 	AbstractRecurringSearchScript(Map<String, Object> params, SearchLookup lookup, LeafReaderContext leafContext) {
 		super(params, lookup, leafContext);
 		this.params = params;
+		this.lookup = lookup;
 	}
     
-    @SuppressWarnings("unchecked")
-	protected Recurring getRecurring(String fieldName) {
-        if (params.containsKey(fieldName)) {
-            Map<String, Object> map = (Map<String, Object>) params.get(fieldName);
+	@SuppressWarnings("unchecked")
+    protected Recurring getRecurring(String fieldName) {
+        if (this.lookup.source().containsKey(fieldName)) {
+            Map<String, Object> map = (Map<String, Object>) this.lookup.source().get(fieldName);
 
             String rrule = (String) map.get(RecurringFieldMapper.FieldNames.RRULE);
             String startDate = (String) map.get(RecurringFieldMapper.FieldNames.START_DATE);
             String endDate = (String) map.get(RecurringFieldMapper.FieldNames.END_DATE);
             
+            Logger("rrule:", rrule);
+            Logger("startDate:", startDate);
+            Logger("endDate:", endDate);
+            
             return new Recurring(startDate, endDate, rrule);
         }
+        
         return null;
     }
 
     protected String getParamValueFor(String paramName) {
         return (String) params.get(paramName);
+    }
+    
+    protected void Logger(String text, String value) {
+    	logger.info(text+":"+value);
     }
 	
 }
