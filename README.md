@@ -3,7 +3,7 @@
 Allow to work in ES with some features of recurrent dates defined in [rfc2445](https://www.ietf.org/rfc/rfc2445.txt). 
 This plugin adds a new type named *recurring* and the native scripts: *nextOccurrence*, *hasOccurrencesAt*, *occurBetween* and *notHasExpired*.
 
-It was tested in ES 6.6.1
+It was tested in ES 6.6.2
 
 [![Build Status](https://travis-ci.org/betorcs/elastic-recurring-plugin.svg?branch=5.0)](https://travis-ci.org/betorcs/elastic-recurring-plugin)
 
@@ -14,7 +14,6 @@ r
 Generating zip file, execute command bellow, the file will be created in folder `build\distributions`.
 
 ```./gradlew clean build```
-/usr/share/elasticsearch/plugins
 
 To installing plugin in elasticsearch, run this command in your elasticsearch server.
 
