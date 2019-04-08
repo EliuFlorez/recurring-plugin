@@ -78,17 +78,11 @@ public class RecurringSearchScriptTests extends AbstractSearchScriptTestCase {
 		params.put("start", "2017-06-27");
 		params.put("end", "2017-06-27");
 
-		String query = client().prepareSearch("test")
-		.setQuery(scriptQuery(new Script(ScriptType.INLINE, "native", "hasAnyOccurrenceBetween", params)))
-		.toString();
-
-		logger.info("hasAnyOccurrenceBetween:"+query);
-
 		SearchResponse searchResponse = client().prepareSearch("test")
 		.setQuery(scriptQuery(new Script(ScriptType.INLINE, "native", "hasAnyOccurrenceBetween", params)))
 		.execute().actionGet();
 
-		logger.info(searchResponse.toString());
+		logger.info("hasAnyOccurrenceBetween:"+searchResponse.toString());
 		assertNoFailures(searchResponse);
 		assertHitCount(searchResponse, 1);
 
@@ -96,27 +90,20 @@ public class RecurringSearchScriptTests extends AbstractSearchScriptTestCase {
 		params = new HashMap<>();
 		params.put("field", "recurrent_date");
 
-		query = client().prepareSearch("test")
-		.setQuery(scriptQuery(new Script(ScriptType.INLINE, "native", "nextOccurrence", params)))
-		.toString();
-
-		logger.info("nextOccurrence:"+query);
-
 		searchResponse = client().prepareSearch("test")
 		.setQuery(scriptQuery(new Script(ScriptType.INLINE, "native", "nextOccurrence", params)))
 		.execute().actionGet();
 
-		logger.info("searchResponse: "+searchResponse.toString());
+		logger.info("nextOccurrence:"+searchResponse.toString());
 		assertNoFailures(searchResponse);
-		assertHitCount(searchResponse, indexBuilders.size());
+		assertHitCount(searchResponse, 3);
 
-		// Search natal
+		// Search party
 		searchResponse = client().prepareSearch("test")
-		.setQuery(boolQuery().should(termQuery("name", "natal")))
+		.setQuery(boolQuery().should(termQuery("name", "party")))
 		.execute().actionGet();
 
-		logger.info("Looking for natal");
-		logger.info(searchResponse.toString());
+		logger.info("party:"+searchResponse.toString());
 		assertNoFailures(searchResponse);
 		assertHitCount(searchResponse, 1);
 
@@ -125,18 +112,11 @@ public class RecurringSearchScriptTests extends AbstractSearchScriptTestCase {
 		params.put("field", "recurrent_date");
 		params.put("date", "2025-05-11");
 
-		query = client().prepareSearch("test")
-		.setQuery(scriptQuery(new Script(ScriptType.INLINE, "native", "hasOccurrencesAt", params)))
-		.toString();
-
-		logger.info("nextOccurrence:"+query);
-
 		searchResponse = client().prepareSearch("test")
 		.setQuery(scriptQuery(new Script(ScriptType.INLINE, "native", "hasOccurrencesAt", params)))
 		.execute().actionGet();
 
-		logger.info("Mothers Day");
-		logger.info(searchResponse.toString());
+		logger.info("hasOccurrencesAt:"+searchResponse.toString());
 		assertNoFailures(searchResponse);
 		assertHitCount(searchResponse, 1);
 
@@ -145,18 +125,11 @@ public class RecurringSearchScriptTests extends AbstractSearchScriptTestCase {
 		params.put("field", "recurrent_date");
 		params.put("date", "2025-10-31");
 
-		query = client().prepareSearch("test")
-		.setQuery(scriptQuery(new Script(ScriptType.INLINE, "native", "hasOccurrencesAt", params)))
-		.toString();
-
-		logger.info("hasOccurrencesAt:"+query);
-
 		searchResponse = client().prepareSearch("test")
 		.setQuery(scriptQuery(new Script(ScriptType.INLINE, "native", "hasOccurrencesAt", params)))
 		.execute().actionGet();
 
-		logger.info("Halloween");
-		logger.info(searchResponse.toString());
+		logger.info("hasOccurrencesAt:"+searchResponse.toString());
 		assertNoFailures(searchResponse);
 		assertHitCount(searchResponse, 1);
 
@@ -166,18 +139,11 @@ public class RecurringSearchScriptTests extends AbstractSearchScriptTestCase {
 		params.put("start", "2017-05-01");
 		params.put("end", "2017-05-31");
 
-		query = client().prepareSearch("test")
-		.setQuery(scriptQuery(new Script(ScriptType.INLINE, "native", "occurBetween", params)))
-		.toString();
-
-		logger.info("occurBetween:"+query);
-
 		searchResponse = client().prepareSearch("test")
 		.setQuery(scriptQuery(new Script(ScriptType.INLINE, "native", "occurBetween", params)))
 		.execute().actionGet();
 
-		logger.info("Events in december");
-		logger.info(searchResponse.toString());
+		logger.info("occurBetween:"+searchResponse.toString());
 		assertNoFailures(searchResponse);
 		assertHitCount(searchResponse, 1);
 
@@ -185,18 +151,11 @@ public class RecurringSearchScriptTests extends AbstractSearchScriptTestCase {
 		params = new HashMap<>();
 		params.put("field", "recurrent_date");
 
-		query = client().prepareSearch("test")
-		.setQuery(scriptQuery(new Script(ScriptType.INLINE, "native", "notHasExpired", params)))
-		.toString();
-
-		logger.info("notHasExpired:"+query);
-
 		searchResponse = client().prepareSearch("test")
 		.setQuery(scriptQuery(new Script(ScriptType.INLINE, "native", "notHasExpired", params)))
 		.execute().actionGet();
 
-		logger.info("Events that are occurring");
-		logger.info(searchResponse.toString());
+		logger.info("notHasExpired:"+searchResponse.toString());
 		assertNoFailures(searchResponse);
 		assertHitCount(searchResponse, 3);
 
@@ -206,21 +165,13 @@ public class RecurringSearchScriptTests extends AbstractSearchScriptTestCase {
 		params.put("start", "2017-01-01");
 		params.put("end", "2018-05-31");
 
-		query = client().prepareSearch("test")
-		.setQuery(scriptQuery(new Script(ScriptType.INLINE, "native", "occurBetween", params)))
-		.addScriptField("occur", new Script(ScriptType.INLINE, "native", "occurrencesBetween", params))
-		.toString();
-
-		logger.info("occurrencesBetween:"+query);
-
 		searchResponse = client().prepareSearch("test")
 		.setQuery(scriptQuery(new Script(ScriptType.INLINE, "native", "occurBetween", params)))
 		.addScriptField("occur", new Script(ScriptType.INLINE, "native", "occurrencesBetween", params))
 		.execute().actionGet();
 
-		logger.info(searchResponse.toString());
+		logger.info("occurrencesBetween:"+searchResponse.toString());
 		assertNoFailures(searchResponse);
-	
 	}
 
 	private XContentBuilder createDoc(String name, String start_date, String end_date, String rrule) throws IOException {

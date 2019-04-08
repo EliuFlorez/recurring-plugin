@@ -154,7 +154,7 @@ public class RecurringPlugin extends Plugin implements MapperPlugin, ScriptPlugi
 
             @Override
             public SearchScript newInstance(LeafReaderContext context) throws IOException {
-            	return new HasAnyOccurrenceBetweenSearchScript(params, lookup, context);
+                return new HasAnyOccurrenceBetweenSearchScript(params, lookup, context);
             }
         }
         // --------------

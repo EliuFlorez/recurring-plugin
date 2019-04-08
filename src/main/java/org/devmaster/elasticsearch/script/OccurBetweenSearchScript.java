@@ -33,19 +33,14 @@ public class OccurBetweenSearchScript extends AbstractRecurringSearchScript {
     }
     
     @Override
-    public Object run() {
+    public double runAsDouble() {
     	Recurring recurring = getRecurring(getParamValueFor(PARAM_FIELD));
         String start = getParamValueFor(PARAM_START);
         String end = getParamValueFor(PARAM_END);
         try {
-            return recurring != null && recurring.occurBetween(new LocalDate(start), new LocalDate(end));
+            return recurring != null && recurring.occurBetween(new LocalDate(start), new LocalDate(end)) ? 1.0d : 0.0d;
         } catch (ParseException e) {
             throw new IllegalArgumentException("Error while check occur between. Error: " + e.getMessage());
         }
-    }
-    
-    @Override
-    public double runAsDouble() {
-        return run() != null ? 0.1d : 0.0d;
     }
 }

@@ -32,18 +32,13 @@ public class HasOccurrencesAtSearchScript extends AbstractRecurringSearchScript 
     }
 
     @Override
-    public Object run() {
+    public double runAsDouble() {
     	Recurring recurring = getRecurring(getParamValueFor(PARAM_FIELD));
         String date = getParamValueFor(PARAM_DATE);
         try {
-            return recurring != null && recurring.hasOccurrencesAt(new LocalDate(date));
+            return recurring != null && recurring.hasOccurrencesAt(new LocalDate(date)) ? 1.0d : 0.0d;
         } catch (ParseException e) {
             throw new IllegalArgumentException("Error while obtaining has occurrences at. Error: " + e.getMessage());
         }
-    }
-    
-    @Override
-    public double runAsDouble() {
-        return run() != null ? 0.1d : 0.0d;
     }
 }

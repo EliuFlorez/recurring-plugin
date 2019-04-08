@@ -41,7 +41,7 @@ public class OccurrencesBetweenSearchScript extends AbstractRecurringSearchScrip
             try {
                 return recurring.occurrencesBetween(start, end);
             } catch (ParseException e) {
-                //throw new IllegalArgumentException("Error while check occurrences between. Error: " + e.getMessage());
+                // ParseException null
             }
         }
         return "fail_2";
@@ -49,6 +49,6 @@ public class OccurrencesBetweenSearchScript extends AbstractRecurringSearchScrip
     
     @Override
     public double runAsDouble() {
-        return run() != null ? 0.1d : 0.0d;
+        return run() != null ? 1.0d : 0.0d;
     }
 }

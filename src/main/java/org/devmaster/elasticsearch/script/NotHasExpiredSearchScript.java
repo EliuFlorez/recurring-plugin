@@ -30,18 +30,13 @@ public class NotHasExpiredSearchScript extends AbstractRecurringSearchScript {
     }
 
     @Override
-    public Object run() {
+    public double runAsDouble() {
     	Recurring recurring = getRecurring(getParamValueFor(PARAM_FIELD));
         try {
-            return recurring != null && recurring.notHasExpired();
+            return recurring != null && recurring.notHasExpired() ? 1.0d : 0.0d;
         } catch (ParseException e) {
-            //throw new IllegalArgumentException("Error while obtaining has occurrences Expired. Error: " + e.getMessage());
+        	// ParseException null
         }
-        return false;
-    }
-    
-    @Override
-    public double runAsDouble() {
-        return run() != null ? 0.1d : 0.0d;
+        return 0.0d;
     }
 }

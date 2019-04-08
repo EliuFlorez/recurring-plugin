@@ -14,8 +14,6 @@
 
 package org.devmaster.elasticsearch.script;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.apache.lucene.index.LeafReaderContext;
 import org.devmaster.elasticsearch.index.mapper.Recurring;
 import org.devmaster.elasticsearch.index.mapper.RecurringFieldMapper;
@@ -28,7 +26,6 @@ abstract class AbstractRecurringSearchScript extends SearchScript {
 
 	private final SearchLookup lookup;
 	private final Map<String, Object> params;
-	private final static Logger logger = LogManager.getLogger(AbstractRecurringSearchScript.class);
 	
 	AbstractRecurringSearchScript(Map<String, Object> params, SearchLookup lookup, LeafReaderContext leafContext) {
 		super(params, lookup, leafContext);
@@ -45,10 +42,6 @@ abstract class AbstractRecurringSearchScript extends SearchScript {
             String startDate = (String) map.get(RecurringFieldMapper.FieldNames.START_DATE);
             String endDate = (String) map.get(RecurringFieldMapper.FieldNames.END_DATE);
             
-            Logger("rrule:", rrule);
-            Logger("startDate:", startDate);
-            Logger("endDate:", endDate);
-            
             return new Recurring(startDate, endDate, rrule);
         }
         
@@ -57,10 +50,6 @@ abstract class AbstractRecurringSearchScript extends SearchScript {
 
     protected String getParamValueFor(String paramName) {
         return (String) params.get(paramName);
-    }
-    
-    protected void Logger(String text, String value) {
-    	logger.info(text+":"+value);
     }
 	
 }

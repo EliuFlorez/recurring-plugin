@@ -49,6 +49,6 @@ public class NextOccurrenceSearchScript extends AbstractRecurringSearchScript {
     
     @Override
     public double runAsDouble() {
-        return run() != null ? 0.1d : 0.0d;
+        return run() != null ? 1.0d : 0.0d;
     }
 }
